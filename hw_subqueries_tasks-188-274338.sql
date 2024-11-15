@@ -85,7 +85,7 @@ order by t.TransactionAmount desc) tr on tr.CustomerID=p.CustomerID
 
 ;with expItems as
 (
-select top 3 s.StockItemID, s.StockItemName, UnitPrice from [Warehouse].[StockItems] s
+select top  3 with ties s.StockItemID, s.StockItemName, UnitPrice from [Warehouse].[StockItems] s
 order by s.UnitPrice desc
 ),
 fact as (
@@ -106,8 +106,8 @@ join [Sales].[Customers] c on c.CustomerID=si.CustomerID
 join [Warehouse].[StockItems] i on i.StockItemID=il.StockItemID
 join [Application].[Cities] s on s.CityID=c.DeliveryCityID
 join [Application].[People] pe on pe.PersonID=si.PackedByPersonID
-where i.StockItemID in (
-select top 3 s.StockItemID from [Warehouse].[StockItems] s
+where i.UnitPrice in (
+select top 3 s.UnitPrice from [Warehouse].[StockItems] s
 order by s.UnitPrice desc
 )
 
