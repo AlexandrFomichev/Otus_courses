@@ -72,7 +72,7 @@ order by a.InvoiceDate
 
 select si.[InvoiceID], c.CustomerName,[InvoiceDate]
 , (il.Quantity*il.UnitPrice) sum_sale
-, sum(il.Quantity*il.UnitPrice) over (partition by eomonth([InvoiceDate])) sum_sale_monthly_cumulative
+, sum(il.Quantity*il.UnitPrice) over (order by eomonth([InvoiceDate]) range unbounded preceding) sum_sale_monthly_cumulative
 from 
 [Sales].[Invoices] si
 join [Sales].[InvoiceLines] il on il.InvoiceID=si.InvoiceID
