@@ -47,9 +47,8 @@ select month_first_date, [Sylvanite, MT]
  (
 select 
 TRIM('()' from TRIM( 'Tailspin Toys' FROM c.CustomerName)) customerName 
-, DATEADD(month, DATEDIFF(month, 0,  i.InvoiceDate),0) month_first_date
+, format(DATEADD(month, DATEDIFF(month, 0,  i.InvoiceDate),0), 'dd.MM.yyyy') month_first_date
 , i.InvoiceID 
-, c.CustomerID 
 from [Sales].[Customers] c
 join [Sales].[Invoices] i on i.CustomerID=c.CustomerID
 where c.CustomerID between 2 and 6
@@ -65,6 +64,8 @@ for customerName in ([Sylvanite, MT]
 
 ) pvt
 
+
+
 /*
 2. Для всех клиентов с именем, в котором есть "Tailspin Toys"
 вывести все адреса, которые есть в таблице, в одной колонке.
@@ -79,6 +80,16 @@ Tailspin Toys (Head Office) | PO Box 8975
 Tailspin Toys (Head Office) | Ribeiroville
 ----------------------------+--------------------
 */
+select CustomerName, DeliveryAddressLine1 from 
+(
+select c.CustomerName from [Sales].[Customers] c
+where c.CustomerName like '%Tailspin Toys%'
+) as src
+unpivot
+(
+DeliveryAddressLine1 for DeliveryAddressLine1 in (select DeliveryAddressLine1 from [Sales].[Customers]
+													where CustomerName like '%Tailspin Toys%')
+) as pvt
 
 select c.CustomerName, cc.DeliveryAddressLine1  from [Sales].[Customers] c
  cross apply (select distinct DeliveryAddressLine1 from [Sales].[Customers]) cc
@@ -87,6 +98,8 @@ where c.CustomerName like '%Tailspin Toys%'
 --проверка кол-ва:
 select (select count(distinct CustomerName) from [Sales].[Customers]
 		where CustomerName like '%Tailspin Toys%')*(select count(distinct DeliveryAddressLine1) from [Sales].[Customers] )
+
+
 
 /*
 3. В таблице стран (Application.Countries) есть поля с цифровым кодом страны и с буквенным.
@@ -122,10 +135,14 @@ unpivot
 
 SELECT c.CustomerID ,C.CustomerName, aa.StockItemID ,aa.UnitPrice, aa.last_invoice_date
 FROM Sales.Customers C
-OUTER APPLY (SELECT   TOP 2  il.UnitPrice, il.StockItemID, max(i.InvoiceDate) last_invoice_date
+OUTER APPLY (SELECT     il.UnitPrice, il.StockItemID, max(i.InvoiceDate) last_invoice_date
+				, RANK() over(order by il.UnitPrice desc) rn
                 FROM Sales.InvoiceLines il
 				join sales.Invoices i on i.InvoiceID=il.InvoiceID
                 WHERE i.CustomerID = C.CustomerID
 				group by il.UnitPrice, il.StockItemID
-                ORDER BY il.UnitPrice DESC) AS aa
+               ) AS aa
+where 1=1
+--and c.CustomerName='Abel Tatarescu'
+and rn<=2
 ORDER BY C.CustomerName
