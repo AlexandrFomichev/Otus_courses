@@ -12,6 +12,7 @@ import pandas as pd
 import math as mt
 from datetime import datetime as dt
 from datetime import timedelta as td
+import datetime as datetime
 
 
 #%%
@@ -57,13 +58,15 @@ class store_database:
         pass
     
     pass
-myDB=store_database()
+
+
+
 #%%
 
 dict_item_groups=pd.DataFrame(pd.read_excel("D:\Курсы\Аналитика\Таблицы БД.xlsx", "dict_item_groups"))
 
 dict_categories={}
-for i in range(10):
+for i in range(19):
     dict_categories[dict_item_groups['item_group_name'][i]]=[dict_item_groups['Мат. ожиание цены'][i], 
                                                              dict_item_groups['Сигма цены'][i],
                                                              dict_item_groups['Потребность (техническое)'][i],
@@ -81,7 +84,10 @@ for i in range(10):
 dict_brands={'golden':2, 'silver': 1.4, 'noname': 1}
 dict_suppliers={1: 'noname', 2: 'silver', 3: 'golden'}
 dict_center_calss={'A':1.2, 'B':1.0, 'C': 0.8, 'D': 0.5}
+#%%
 
+
+#%%
 
 class item:
     def __init__(self, group, supplier):
@@ -98,24 +104,10 @@ class item:
         pass
     
     pass
-item1=item('Зонты', 1)
 
-print(item1.cost, item1.price, item1.weight, item1.item_buy_probability)
-item1.mark_down(0.7)
-print(item1.cost, item1.price, item1.weight, item1.item_buy_probability)
+
 #%%
-st=myDB.query_data("""SELECT [store_id]
-      ,[store_name]
-      ,[trade_area]
-      ,[trade_center_calss]
-      ,[store_floor]
-      ,[open_date]
-      ,[city]
-      ,[copmetitors_cnt]
-      ,[city_center_distance (m)]
-  FROM [MyStore].[dict].[stores]
-""")[0]
-print(st)
+
 
 class store:
     def __init__(self, st, item_list):
@@ -127,10 +119,28 @@ class store:
         self.competitors_cnt=st[7]
         self.city_center_dist=float(st[8])
         self.item_sold=[]
+        self.conn=store_database()
         pass
     
-    def get_item(self, item):
-        self.item_list.append(item)
+    def get_item(self):
+        #self.item_list.append(item)
+        self.conn.insert_data("""fact.Current_Deliveriy_to_store""", [[self.store_id, datetime.datetime.now(), 1, 1,1, 200]])
+        pass
+    
+    def fill_store(self, store, item_group, item_brand, item_cnt):
+        sum_cost=0
+        item_list=[]
+        cur_store=store
+        for i in range(item_cnt):
+            cur_item=item(item_group,item_brand)
+            sum_cost=sum_cost+cur_item.cost
+            item_list.append(cur_item)
+            pass
+        if self.budget_diff(-sum_cost):
+            for j in item_list:
+                store.get_item(j)
+                pass
+            pass
         pass
     
     def attract_visitors(self):
@@ -156,16 +166,11 @@ class store:
 
 
 
-store1=store(st, [])
+
+
 
 #%%
-
-store1.get_item(item1)
-print(store1.attract_visitors())
-print(store1.sails_rests())
-
-#%%
-class store:
+class store1:
     def __init__(self, st, item_list):
         self.store_id=st[0]
         self.trade_area=float(st[2])
@@ -198,8 +203,8 @@ class store:
         return increase/decrease
     
     def sail_possible(self, item):
-        lux_coef=0.5*dict_store_clusters[self.cluster]/dict_brands[item.brand]
-        need_coef=dict_groups[item.group][2]
+        lux_coef=0.5*dict_center_calss[self.cluster]/dict_brands[item.brand]
+        need_coef=dict_categories[item.group][2]
         return lux_coef*need_coef*self.attract_visitors()/10000
     
     def sail_items(self):
