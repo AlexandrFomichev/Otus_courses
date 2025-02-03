@@ -8,6 +8,13 @@
 
 --доступы на изменение объектов: владельца Ѕƒ, системного администратора, разработчиков
 
+create schema dict;
+go
+create schema Fact;
+go
+create schema CRM;
+go
+create schema Pers
 
 /*“аблица-справочник магазинов сети с текущим состо€ние магазинов
 заполн€етс€ вручную операционистами в случае открыти€ нового магазина или изменени€ характеристик текущего
@@ -42,6 +49,45 @@ CREATE TABLE [dict].[cities](
 	[region] varchar(20) NULL, --–егион, в котором расположен город
 	[cost_class] int NULL, --техническое поле, не используетс€ аналитиками
 ) 
+
+/* лассификатор товаров
+заполн€етс€ вручную c ведением истории изменений наименований*/
+
+create table [dict].[item_groups](
+item_group_id int primary key not null, 
+item_group_name nvarchar(50) not null,
+item_category_name nvarchar(50) not null,
+ValidFrom DATETIME2 GENERATED ALWAYS AS ROW START NOT NULL, --врем€ начала актуальности строки
+ValidTo DATETIME2 GENERATED ALWAYS AS ROW END NOT NULL, --врем€ окончани€ актуальности строки
+PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo)
+)
+WITH (SYSTEM_VERSIONING = ON)
+
+
+create table dict.suppliers_brands(
+[supplier_id] int primary key not null,
+[supplier_name] nvarchar(100) not null,
+[brand] nvarchar(10) not null,
+ValidFrom DATETIME2 GENERATED ALWAYS AS ROW START NOT NULL, --врем€ начала актуальности строки
+ValidTo DATETIME2 GENERATED ALWAYS AS ROW END NOT NULL, --врем€ окончани€ актуальности строки
+PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo)
+)
+WITH (SYSTEM_VERSIONING = ON)
+
+create table [dict].[items](
+[item_id] int primary key not null,
+[item_name] nvarchar(100) null,
+[item_group_id] int foreign key references [dict].[item_groups]([item_group_id]) not null,
+[item_supplier_id] int foreign key references dict.suppliers_brands([supplier_id]) not null,
+[item_cost] money not null
+)
+
+
+create table dict.transaction_types (
+[Transactions_type_id] int primary key not null,
+[Transactions_type_name] nvarchar(20) not null
+)
+
 
 /*текущие (сегодн€шние) клиентские транзакции на кассе (куча)
 заполн€етс€ автоматически при оплате клиентом покупок*/
@@ -83,11 +129,6 @@ constraint [PK_cash_transaction] PRIMARY KEY CLUSTERED
 ) 
 
 
-create table dict.transaction_types (
-[Transactions_type_id] int primary key not null,
-[Transactions_type_name] nvarchar(20) not null
-)
-
 
 /*“аблица с историей кампаний (периоды скидок на определенные группы товаров)
 заполн€етс€ вручную при планировании новых кампаний
@@ -111,18 +152,6 @@ constraint [PK_Promotional_Campaign] PRIMARY KEY CLUSTERED
 )
 
 
-/* лассификатор товаров
-заполн€етс€ вручную c ведением истории изменений наименований*/
-
-create table [dict].[item_groups](
-item_group_id int primary key not null, 
-item_group_name nvarchar(50) not null,
-item_category_name nvarchar(50) not null,
-ValidFrom DATETIME2 GENERATED ALWAYS AS ROW START NOT NULL, --врем€ начала актуальности строки
-ValidTo DATETIME2 GENERATED ALWAYS AS ROW END NOT NULL, --врем€ окончани€ актуальности строки
-PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo)
-)
-WITH (SYSTEM_VERSIONING = ON)
 
 
 /*заполн€етс€ в конце дн€ из [fact].[Current_Cash_transactions] дл€ чеков,
@@ -132,6 +161,7 @@ create table fact.[anket_discount_cards](
 [discount_card_type_id] nvarchar(20), --id типа карты (вли€ет на скидку)
 [realize_date] date, --дата покупки карты
 )
+
 
 
 /*типы дисконтных карт с значением скидки дл€ каждой карты*/
@@ -147,7 +177,7 @@ create table [dict].[discount_cards_types](
 /*заполн€етс€ в конце дн€ из [fact].[Current_Cash_transactions] дл€ чеков,
 в которы была куплена карта магазина*/
 create table [pers].[anket_person](
-[ank_no] int primary key not null,
+[ank_no] int primary key not null foreign key references fact.[anket_discount_cards]([ank_no]),
 [client_name] nvarchar(100),
 [mobile_phone] nvarchar(20),
 [e_mail] nvarchar(100),
@@ -156,28 +186,6 @@ create table [pers].[anket_person](
 
 
 
-create table dict.suppliers_brands(
-[supplier_id] int primary key not null,
-[supplier_name] nvarchar(100) not null,
-[brand] nvarchar(10) not null,
-ValidFrom DATETIME2 GENERATED ALWAYS AS ROW START NOT NULL, --врем€ начала актуальности строки
-ValidTo DATETIME2 GENERATED ALWAYS AS ROW END NOT NULL, --врем€ окончани€ актуальности строки
-PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo)
-)
-WITH (SYSTEM_VERSIONING = ON)
-
-
-
-
-
-
-create table [dict].[items](
-[item_id] int primary key not null,
-[item_name] nvarchar(100) null,
-[item_group_id] int foreign key references [dict].[item_groups]([item_group_id]) not null,
-[item_supplier_id] int foreign key references dict.suppliers_brands([supplier_id]) not null,
-[item_cost] money not null
-)
 
 
 /*куча, в которую записываютс€ текущие принимаемые товары при их сканировании*/
