@@ -273,6 +273,16 @@ ALTER TABLE [Fact].[Deliveriy_to_store]
 ADD FOREIGN KEY ([Delivery_date])
 REFERENCES dict.Calendar([Report_DT])
 
+--Создание индекса для дат начала кампаний
+create nonclustered index [Promotional_Campaign_effective_from] 
+on [CRM].[Promotional_Campaign]
+(
+[Promotional_Campaign_id]
+)
+include([effective_from])
+
+
+
 
 select object_name(i.object_id), i.* from sys.indexes i
 join  sys.objects o on o.object_id=i.object_id
