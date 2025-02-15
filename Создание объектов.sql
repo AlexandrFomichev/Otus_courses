@@ -1,4 +1,5 @@
-
+USE my_store_test;
+go
 --—’≈ћџ:
 --dict - таблицы-справочники, есть доступ на SELECT у всех подразделений
 --Fact - таблицы операций с бэк-систем (кассы, терминалы приЄма поставок и т.д.). ≈сnm доступ на SELECT у владельца Ѕƒ, системного администратора и аналитиков данных.
@@ -14,7 +15,9 @@ create schema Fact;
 go
 create schema CRM;
 go
-create schema Pers
+create schema Pers;
+go
+
 
 /*“аблица-справочник магазинов сети с текущим состо€ние магазинов
 заполн€етс€ вручную операционистами в случае открыти€ нового магазина или изменени€ характеристик текущего
@@ -133,10 +136,11 @@ constraint [PK_cash_transaction] PRIMARY KEY CLUSTERED
 /*“аблица с историей кампаний (периоды скидок на определенные группы товаров)
 заполн€етс€ вручную при планировании новых кампаний
 используетс€ дл€ дашбордов и в etl-процессах дл€ расчета*/
+
 create table [CRM].[Promotional_Campaign](
 [Promotional_Campaign_id] int not null,
-[store_id] int not null,
-[item_group] int not null,
+[store_id] int foreign key references [dict].[stores]([store_id]) not null,
+[item_group_id] int foreign key references [dict].[item_groups]([item_group_id]) not null,
 [Promotional_Campaign_name] nvarchar(50) not null,
 [Campaign_description] nvarchar(200) not null,
 [mark_down] numeric (4,3) not null,
@@ -144,25 +148,9 @@ create table [CRM].[Promotional_Campaign](
 [effective_to] date not null
 constraint [PK_Promotional_Campaign] PRIMARY KEY CLUSTERED 
 	(
-	[Promotional_Campaign_id] ASC, 
-	[store_id] ASC, 
-	[effective_from] ASC,
-	[effective_to] ASC
+	[Promotional_Campaign_id] ASC
 	)
 )
-
-
-
-
-/*заполн€етс€ в конце дн€ из [fact].[Current_Cash_transactions] дл€ чеков,
-в которы была куплена карта магазина*/
-create table fact.[anket_discount_cards](
-[ank_no] int primary key not null, --id анкетных данных клиента
-[discount_card_type_id] nvarchar(20), --id типа карты (вли€ет на скидку)
-[realize_date] date, --дата покупки карты
-)
-
-
 
 /*типы дисконтных карт с значением скидки дл€ каждой карты*/
 create table [dict].[discount_cards_types](
@@ -172,18 +160,26 @@ create table [dict].[discount_cards_types](
 )
 
 
-
-
 /*заполн€етс€ в конце дн€ из [fact].[Current_Cash_transactions] дл€ чеков,
 в которы была куплена карта магазина*/
 create table [pers].[anket_person](
-[ank_no] int primary key not null foreign key references fact.[anket_discount_cards]([ank_no]),
+[ank_no] int primary key not null,
 [client_name] nvarchar(100),
 [mobile_phone] nvarchar(20),
 [e_mail] nvarchar(100),
 [birthday] date
 )
 
+
+/*заполн€етс€ в конце дн€ из [fact].[Current_Cash_transactions] дл€ чеков,
+в которы была куплена карта магазина*/
+
+create table [dict].[anket_discount_cards](
+[discount_card_id] int primary key not null, --id дисконтной карты
+[ank_no] int foreign key references [Pers].[anket_person]([ank_no]) not null, --id анкетных данных клиента
+[discount_card_type_id] int foreign key references [dict].[discount_cards_types] ([discount_card_type_id]), --id типа карты (вли€ет на скидку)
+[realize_date] date, --дата покупки карты
+)
 
 
 
@@ -200,18 +196,13 @@ create table fact.Current_Deliveriy_to_store(
 /*истори€ поставок - заполн€етс€ раз в день после окончани€ поставки на основании данных 
 fact.Current_Deliveriy_to_store*/
 create table fact.Deliveriy_to_store(
-[Delivery_id] int not null,
+[Delivery_id] int primary key  not null,
 [Delivery_date_time] datetime2,
 [Delivery_date] date not null,
-[supplier_id] int not null,
+[supplier_id] int foreign key references [dict].[suppliers_brands]([supplier_id]) not null,
 [store_id] int foreign key references [dict].[stores]([store_id])  NOT NULL, 
 [item_id] int foreign key references [dict].[items]([item_id]) not null, 
 [item_cost] int not null
-constraint [PK_Deliveriy] primary key 
-	(
-	[Delivery_id] asc,
-	[Delivery_date] asc
-	)
 )
 
 
@@ -221,10 +212,68 @@ constraint [PK_Deliveriy] primary key
 в начале дн€ после поставки и в конце дн€ при закрытии кассы*/
 create table fact.Store_rests(
 [store_id] int foreign key references dict.stores([store_id]) not null,
-[delivery_id] int  not null,
+[delivery_id] int foreign key references [fact].[Deliveriy_to_store]([delivery_id]) not null,
 [item_id] int foreign key references dict.items([item_id]) not null,
 [rest_date] date not null,
 [item_price] money not null
-constraint PK_store_date_id primary key
-	([store_id], [rest_date], [delivery_id])
+constraint PK_store_date_item_id primary key
+	([store_id], [rest_date], [item_id])
 )
+
+
+/*—оздание календар€*/
+CREATE TABLE dict.Calendar(
+       [Report_DT] Date NOT NULL,
+       [Week_Day_nm] char(10) NOT NULL,
+       [DayOfWeek] tinyint NOT NULL,
+       [DayOfMonth] tinyint NOT NULL,
+       [DayOfYear] smallint NOT NULL,
+       [PreviousDay] date NOT NULL,
+       [NextDay] date NOT NULL,
+       [WeekOfYear] tinyint NOT NULL,
+       [Month] char(10) NOT NULL,
+       [MonthOfYear] tinyint NOT NULL,
+       [QuarterOfYear] tinyint NOT NULL,
+       [Year] int NOT NULL,
+       [IsWeekend] bit NOT NULL,
+    )
+ 
+ALTER TABLE  dict.Calendar
+ADD CONSTRAINT PK_CalendarDate PRIMARY KEY ([Report_DT]); 
+
+--создание индекса дл€ дисконтных карт дл€ быстрого поиска по дате открыти€ карты 
+--+ создание FK к календарю
+create nonclustered index [FK_dicound_card_realize_date] 
+on [dict].[anket_discount_cards]
+(
+[discount_card_id]
+)
+include([realize_date])
+
+ALTER TABLE [dict].[anket_discount_cards]
+ADD FOREIGN KEY ([realize_date])
+REFERENCES dict.Calendar([Report_DT])
+
+
+
+--создание FK к календарю дл€ кассовых транзакций 
+ALTER TABLE [Fact].[Cash_transactions]
+ADD FOREIGN KEY ([Operation_date])
+REFERENCES dict.Calendar([Report_DT])
+
+
+
+--создание FK к календарю дл€ товарных остатков
+ALTER TABLE [Fact].[Store_rests]
+ADD FOREIGN KEY ([rest_date])
+REFERENCES dict.Calendar([Report_DT])
+
+--создание FK к календарю дл€ поставок
+ALTER TABLE [Fact].[Deliveriy_to_store]
+ADD FOREIGN KEY ([Delivery_date])
+REFERENCES dict.Calendar([Report_DT])
+
+
+select object_name(i.object_id), i.* from sys.indexes i
+join  sys.objects o on o.object_id=i.object_id
+where o.type_desc='USER_TABLE'
