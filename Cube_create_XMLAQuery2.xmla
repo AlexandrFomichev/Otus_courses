@@ -1,0 +1,896 @@
+{
+  "create": {
+    "database": {
+      "name": "MyStore_Tabular",
+      "compatibilityLevel": 1600,
+      "model": {
+        "name": "Модель",
+        "culture": "ru-RU",
+        "dataSources": [
+          {
+            "type": "structured",
+            "name": "SQL/DESKTOP-UG0O99T\\LEARNING;MyStore",
+            "connectionDetails": {
+              "protocol": "tds",
+              "address": {
+                "server": "DESKTOP-UG0O99T\\LEARNING",
+                "database": "MyStore"
+              },
+              "authentication": null,
+              "query": null
+            },
+            "credential": {
+              "AuthenticationKind": "ServiceAccount",
+              "kind": "SQL",
+              "path": "desktop-ug0o99t\\learning;MyStore",
+              "EncryptConnection": false
+            }
+          }
+        ],
+        "tables": [
+          {
+            "name": "Продажи",
+            "columns": [
+              {
+                "name": "store_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "store_id"
+              },
+              {
+                "name": "item_group_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_group_id"
+              },
+              {
+                "name": "item_cost",
+                "dataType": "decimal",
+                "isHidden": true,
+                "sourceColumn": "item_cost"
+              },
+              {
+                "name": "transaction_type_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "transaction_type_id"
+              },
+              {
+                "name": "item_price",
+                "dataType": "decimal",
+                "isHidden": true,
+                "sourceColumn": "item_price"
+              },
+              {
+                "name": "sale_price",
+                "dataType": "decimal",
+                "isHidden": true,
+                "sourceColumn": "sale_price"
+              },
+              {
+                "name": "item_price_start",
+                "dataType": "decimal",
+                "isHidden": true,
+                "sourceColumn": "item_price_start"
+              },
+              {
+                "name": "item_supplier_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_supplier_id"
+              },
+              {
+                "name": "item_weight",
+                "dataType": "double",
+                "isHidden": true,
+                "sourceColumn": "item_weight"
+              },
+              {
+                "name": "Номер чека",
+                "dataType": "int64",
+                "sourceColumn": "receipt_no"
+              },
+              {
+                "name": "discount_card_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "discount_card_id"
+              },
+              {
+                "name": "item_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_id"
+              },
+              {
+                "name": "Report_DT",
+                "dataType": "dateTime",
+                "sourceColumn": "Report_DT"
+              },
+              {
+                "name": "Delivery_date",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "Delivery_date"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition2022_1",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    cb_rpt_vf_sales = Source{[Schema=\"cb_rpt\",Item=\"vf_sales\"]}[Data],",
+                    "    #\"Строки с примененным фильтром\" = Table.SelectRows(cb_rpt_vf_sales, each ([Report_DT] < #date(2022, 7, 1) ))",
+                    "in",
+                    "    #\"Строки с примененным фильтром\""
+                  ]
+                },
+                "annotations": [
+                  {
+                    "name": "QueryEditorSerialization",
+                    "value": [
+                      "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                      "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                      "    cb_rpt_vf_sales = Source{[Schema=\"cb_rpt\",Item=\"vf_sales\"]}[Data],",
+                      "    #\"Строки с примененным фильтром\" = Table.SelectRows(cb_rpt_vf_sales, each ([Report_DT] < #date(2022, 7, 1) ))",
+                      "in",
+                      "    #\"Строки с примененным фильтром\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Partition2022_2",
+                "mode": "import",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    cb_rpt_vf_sales = Source{[Schema=\"cb_rpt\",Item=\"vf_sales\"]}[Data],",
+                    "    #\"Строки с примененным фильтром\" = Table.SelectRows(cb_rpt_vf_sales, each ([Report_DT] >= #date(2022, 7, 1) ))",
+                    "in",
+                    "    #\"Строки с примененным фильтром\""
+                  ]
+                },
+                "annotations": [
+                  {
+                    "name": "QueryEditorSerialization",
+                    "value": [
+                      "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                      "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                      "    cb_rpt_vf_sales = Source{[Schema=\"cb_rpt\",Item=\"vf_sales\"]}[Data],",
+                      "    #\"Строки с примененным фильтром\" = Table.SelectRows(cb_rpt_vf_sales, each ([Report_DT] >= #date(2022, 7, 1) ))",
+                      "in",
+                      "    #\"Строки с примененным фильтром\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "measures": [
+              {
+                "name": "Продажи: кол-во товаров",
+                "expression": "DISTINCTCOUNT([item_id])"
+              },
+              {
+                "name": "Количество чеков",
+                "expression": "DISTINCTCOUNT([Номер чека])"
+              },
+              {
+                "name": "Продажи ЗЦ",
+                "expression": "SUM([item_cost])",
+                "formatString": "#,0.00 \"₽\";-#,0.00 \"₽\";#,0.00 \"₽\"",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"Currency\" Accuracy=\"2\" ThousandSeparator=\"True\"><Currency LCID=\"1049\" DisplayName=\"₽ Русский (Россия)\" Symbol=\"₽\" PositivePattern=\"3\" NegativePattern=\"8\" /></Format>"
+                  }
+                ]
+              },
+              {
+                "name": "Продажи РЦ",
+                "expression": "SUM([sale_price])",
+                "formatString": "#,0.00 \"₽\";-#,0.00 \"₽\";#,0.00 \"₽\"",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"Currency\" Accuracy=\"2\" ThousandSeparator=\"True\"><Currency LCID=\"1049\" DisplayName=\"₽ Русский (Россия)\" Symbol=\"₽\" PositivePattern=\"3\" NegativePattern=\"8\" /></Format>"
+                  }
+                ]
+              },
+              {
+                "name": "Продажи вес товара",
+                "expression": "SUM([item_weight])"
+              },
+              {
+                "name": "Продажи ПРЦ",
+                "expression": "SUM([item_price_start])",
+                "formatString": "#,0.00 \"₽\";-#,0.00 \"₽\";#,0.00 \"₽\"",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"Currency\" Accuracy=\"2\" ThousandSeparator=\"True\"><Currency LCID=\"1049\" DisplayName=\"₽ Русский (Россия)\" Symbol=\"₽\" PositivePattern=\"3\" NegativePattern=\"8\" /></Format>"
+                  }
+                ]
+              },
+              {
+                "name": "Кол-во дисконтных карт",
+                "expression": "DISTINCTCOUNT([discount_card_id])"
+              }
+            ]
+          },
+          {
+            "name": "Календарь",
+            "columns": [
+              {
+                "name": "Дата",
+                "dataType": "dateTime",
+                "sourceColumn": "Report_DT"
+              },
+              {
+                "name": "День недели",
+                "dataType": "string",
+                "sourceColumn": "Week_Day_nm"
+              },
+              {
+                "name": "Номер дня недели",
+                "dataType": "int64",
+                "sourceColumn": "DayOfWeek"
+              },
+              {
+                "name": "День месяца",
+                "dataType": "int64",
+                "sourceColumn": "DayOfMonth"
+              },
+              {
+                "name": "День года",
+                "dataType": "int64",
+                "sourceColumn": "DayOfYear"
+              },
+              {
+                "name": "Предыдущий день",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "PreviousDay"
+              },
+              {
+                "name": "Следующий день",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "NextDay"
+              },
+              {
+                "name": "Номер недели",
+                "dataType": "int64",
+                "sourceColumn": "WeekOfYear"
+              },
+              {
+                "name": "Месяц",
+                "dataType": "string",
+                "sourceColumn": "Month",
+                "sortByColumn": "Номер месяца"
+              },
+              {
+                "name": "Номер месяца",
+                "dataType": "int64",
+                "sourceColumn": "MonthOfYear"
+              },
+              {
+                "name": "Квартал",
+                "dataType": "int64",
+                "sourceColumn": "QuarterOfYear"
+              },
+              {
+                "name": "Год",
+                "dataType": "int64",
+                "sourceColumn": "Year"
+              },
+              {
+                "name": "Выходной",
+                "dataType": "boolean",
+                "sourceColumn": "IsWeekend"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    dict_Calendar = Source{[Schema=\"dict\",Item=\"Calendar\"]}[Data]",
+                    "in",
+                    "    dict_Calendar"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Товарные группы",
+            "columns": [
+              {
+                "name": "item_group_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_group_id"
+              },
+              {
+                "name": "Товарная группа",
+                "dataType": "string",
+                "sourceColumn": "item_group_name"
+              },
+              {
+                "name": "Товарная категория",
+                "dataType": "string",
+                "sourceColumn": "item_category_name"
+              },
+              {
+                "name": "ValidFrom",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "ValidFrom"
+              },
+              {
+                "name": "ValidTo",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "ValidTo"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    dict_item_groups = Source{[Schema=\"dict\",Item=\"item_groups\"]}[Data]",
+                    "in",
+                    "    dict_item_groups"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Товары",
+            "columns": [
+              {
+                "name": "id товара",
+                "dataType": "int64",
+                "sourceColumn": "item_id"
+              },
+              {
+                "name": "Наименование товара",
+                "dataType": "string",
+                "sourceColumn": "item_name"
+              },
+              {
+                "name": "item_group_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_group_id"
+              },
+              {
+                "name": "item_supplier_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_supplier_id"
+              },
+              {
+                "name": "Себестоимость",
+                "dataType": "decimal",
+                "sourceColumn": "item_cost"
+              },
+              {
+                "name": "Вес товара",
+                "dataType": "double",
+                "sourceColumn": "item_weight"
+              },
+              {
+                "name": "ПРЦ",
+                "dataType": "decimal",
+                "sourceColumn": "item_price_start"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    dict_items = Source{[Schema=\"dict\",Item=\"items\"]}[Data]",
+                    "in",
+                    "    dict_items"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Магазины",
+            "columns": [
+              {
+                "name": "store_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "store_id"
+              },
+              {
+                "name": "Наименование магазина",
+                "dataType": "string",
+                "sourceColumn": "store_name"
+              },
+              {
+                "name": "Торговая площадь",
+                "dataType": "double",
+                "sourceColumn": "trade_area"
+              },
+              {
+                "name": "Класс магазина",
+                "dataType": "string",
+                "sourceColumn": "trade_center_calss"
+              },
+              {
+                "name": "Этаж",
+                "dataType": "int64",
+                "sourceColumn": "store_floor"
+              },
+              {
+                "name": "Дата открытия",
+                "dataType": "dateTime",
+                "sourceColumn": "open_date"
+              },
+              {
+                "name": "Дата закрытия",
+                "dataType": "dateTime",
+                "sourceColumn": "close_date"
+              },
+              {
+                "name": "city",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "city"
+              },
+              {
+                "name": "Кол-во конкурентов",
+                "dataType": "int64",
+                "sourceColumn": "copmetitors_cnt"
+              },
+              {
+                "name": "Удалённость от центра",
+                "dataType": "double",
+                "sourceColumn": "city_center_distance (m)"
+              },
+              {
+                "name": "ValidFrom",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "ValidFrom"
+              },
+              {
+                "name": "ValidTo",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "ValidTo"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    dict_stores = Source{[Schema=\"dict\",Item=\"stores\"]}[Data]",
+                    "in",
+                    "    dict_stores"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Периоды_поставок",
+            "columns": [
+              {
+                "name": "Дата поставки",
+                "dataType": "dateTime",
+                "sourceColumn": "Report_DT"
+              },
+              {
+                "name": "Месяц поставки",
+                "dataType": "string",
+                "sourceColumn": "Month"
+              },
+              {
+                "name": "Квартал поставки",
+                "dataType": "int64",
+                "sourceColumn": "QuarterOfYear"
+              },
+              {
+                "name": "Номер месяца поставки",
+                "dataType": "int64",
+                "sourceColumn": "MonthOfYear"
+              },
+              {
+                "name": "Год поставки",
+                "dataType": "int64",
+                "sourceColumn": "Year"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    cb_rpt_vf_deliveries_periods = Source{[Schema=\"cb_rpt\",Item=\"vf_deliveries_periods\"]}[Data]",
+                    "in",
+                    "    cb_rpt_vf_deliveries_periods"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Поставки",
+            "columns": [
+              {
+                "name": "Дата поставки",
+                "dataType": "dateTime",
+                "sourceColumn": "Delivery_date"
+              },
+              {
+                "name": "id_товара",
+                "dataType": "int64",
+                "sourceColumn": "item_id"
+              },
+              {
+                "name": "store_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "store_id"
+              },
+              {
+                "name": "supplier_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "supplier_id"
+              },
+              {
+                "name": "Поставка ЗЦ",
+                "dataType": "int64",
+                "sourceColumn": "item_cost"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    cb_rpt_vf_deliveries = Source{[Schema=\"cb_rpt\",Item=\"vf_deliveries\"]}[Data]",
+                    "in",
+                    "    cb_rpt_vf_deliveries"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "Товарные_Остатки",
+            "columns": [
+              {
+                "name": "Report_DT",
+                "dataType": "dateTime",
+                "sourceColumn": "Report_DT"
+              },
+              {
+                "name": "store_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "store_id"
+              },
+              {
+                "name": "item_group_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_group_id"
+              },
+              {
+                "name": "item_cost",
+                "dataType": "decimal",
+                "sourceColumn": "item_cost"
+              },
+              {
+                "name": "item_price",
+                "dataType": "decimal",
+                "sourceColumn": "item_price"
+              },
+              {
+                "name": "Остатки ПРЦ",
+                "dataType": "decimal",
+                "isHidden": true,
+                "sourceColumn": "item_price_start"
+              },
+              {
+                "name": "item_supplier_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_supplier_id"
+              },
+              {
+                "name": "Остатки вес",
+                "dataType": "double",
+                "sourceColumn": "item_weight"
+              },
+              {
+                "name": "item_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "item_id"
+              },
+              {
+                "name": "rest_price",
+                "dataType": "decimal",
+                "isHidden": true,
+                "sourceColumn": "rest_price"
+              },
+              {
+                "name": "Delivery_date",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "Delivery_date"
+              },
+              {
+                "name": "item_weight_part",
+                "dataType": "double",
+                "sourceColumn": "item_weight_part"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    cb_rpt_vf_rests = Source{[Schema=\"cb_rpt\",Item=\"vf_rests\"]}[Data]",
+                    "in",
+                    "    cb_rpt_vf_rests"
+                  ]
+                }
+              }
+            ],
+            "measures": [
+              {
+                "name": "Остатки - кол-во товаров",
+                "expression": "DISTINCTCOUNT([item_id])"
+              },
+              {
+                "name": "Остатки - сумма РЦ",
+                "expression": "SUM([rest_price])",
+                "formatString": "#,0.00 \"₽\";-#,0.00 \"₽\";#,0.00 \"₽\"",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"Currency\" Accuracy=\"2\" ThousandSeparator=\"True\"><Currency LCID=\"1049\" DisplayName=\"₽ Русский (Россия)\" Symbol=\"₽\" PositivePattern=\"3\" NegativePattern=\"8\" /></Format>"
+                  }
+                ]
+              },
+              {
+                "name": "Остатки - сумма ПРЦ",
+                "expression": "SUM([Остатки ПРЦ])",
+                "formatString": "#,0.00 \"₽\";-#,0.00 \"₽\";#,0.00 \"₽\"",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"Currency\" Accuracy=\"2\" ThousandSeparator=\"True\"><Currency LCID=\"1049\" DisplayName=\"₽ Русский (Россия)\" Symbol=\"₽\" PositivePattern=\"3\" NegativePattern=\"8\" /></Format>"
+                  }
+                ]
+              },
+              {
+                "name": "Наполненность магазина",
+                "expression": "SUM([item_weight_part])",
+                "formatString": "0.0%;-0.0%;0.0%"
+              },
+              {
+                "name": "Остатки ЗЦ",
+                "expression": "SUM([item_cost])",
+                "formatString": "#,0.00 \"₽\";-#,0.00 \"₽\";#,0.00 \"₽\"",
+                "annotations": [
+                  {
+                    "name": "Format",
+                    "value": "<Format Format=\"Currency\" Accuracy=\"2\" ThousandSeparator=\"True\"><Currency LCID=\"1049\" DisplayName=\"₽ Русский (Россия)\" Symbol=\"₽\" PositivePattern=\"3\" NegativePattern=\"8\" /></Format>"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Посетители",
+            "columns": [
+              {
+                "name": "store_id",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "store_id"
+              },
+              {
+                "name": "Report_DT",
+                "dataType": "dateTime",
+                "isHidden": true,
+                "sourceColumn": "Report_DT"
+              },
+              {
+                "name": "Количество посетителей",
+                "dataType": "int64",
+                "isHidden": true,
+                "sourceColumn": "visitors_count"
+              }
+            ],
+            "partitions": [
+              {
+                "name": "Partition",
+                "dataView": "full",
+                "source": {
+                  "type": "m",
+                  "expression": [
+                    "let",
+                    "    Source = #\"SQL/DESKTOP-UG0O99T\\LEARNING;MyStore\",",
+                    "    cb_rpt_vf_visitors = Source{[Schema=\"cb_rpt\",Item=\"vf_visitors\"]}[Data]",
+                    "in",
+                    "    cb_rpt_vf_visitors"
+                  ]
+                }
+              }
+            ],
+            "measures": [
+              {
+                "name": "Кол-во посетителей",
+                "expression": "SUM([Количество посетителей])"
+              }
+            ]
+          }
+        ],
+        "relationships": [
+          {
+            "name": "818c5573-9159-4fc2-a17e-7f0f796e32dd",
+            "fromTable": "Товары",
+            "fromColumn": "item_group_id",
+            "toTable": "Товарные группы",
+            "toColumn": "item_group_id"
+          },
+          {
+            "name": "b988d864-e3c7-4d6e-8d85-990852be107f",
+            "fromTable": "Продажи",
+            "fromColumn": "item_id",
+            "toTable": "Товары",
+            "toColumn": "id товара"
+          },
+          {
+            "name": "10f14b0a-cd1e-48ad-8a7a-fccbb7dbf8c8",
+            "fromTable": "Продажи",
+            "fromColumn": "store_id",
+            "toTable": "Магазины",
+            "toColumn": "store_id"
+          },
+          {
+            "name": "2dcc75bf-ffb7-459f-9479-08e19b29a34b",
+            "fromTable": "Продажи",
+            "fromColumn": "Report_DT",
+            "toTable": "Календарь",
+            "toColumn": "Дата"
+          },
+          {
+            "name": "b7ec583a-ae64-4549-8b5f-8a81479c8d07",
+            "fromTable": "Поставки",
+            "fromColumn": "Дата поставки",
+            "toTable": "Календарь",
+            "toColumn": "Дата"
+          },
+          {
+            "name": "21b3f62f-228a-442d-9a6a-917845b12117",
+            "fromTable": "Поставки",
+            "fromColumn": "Дата поставки",
+            "toTable": "Периоды_поставок",
+            "toColumn": "Дата поставки"
+          },
+          {
+            "name": "863f667a-2850-4078-80d2-9b8f274d0f24",
+            "fromTable": "Поставки",
+            "fromColumn": "id_товара",
+            "toTable": "Товары",
+            "toColumn": "id товара"
+          },
+          {
+            "name": "eff3d325-0418-4611-9460-ec2eec767aa3",
+            "fromTable": "Поставки",
+            "fromColumn": "store_id",
+            "toTable": "Магазины",
+            "toColumn": "store_id"
+          },
+          {
+            "name": "e197010f-f597-4f56-8d79-79f50b895e68",
+            "fromTable": "Продажи",
+            "fromColumn": "Delivery_date",
+            "toTable": "Периоды_поставок",
+            "toColumn": "Дата поставки"
+          },
+          {
+            "name": "f4151e43-4300-4197-bf4c-ca6c35ac1927",
+            "fromTable": "Товарные_Остатки",
+            "fromColumn": "item_id",
+            "toTable": "Товары",
+            "toColumn": "id товара"
+          },
+          {
+            "name": "143736c9-2e3b-4fc9-97c3-49406cbcb873",
+            "fromTable": "Товарные_Остатки",
+            "fromColumn": "store_id",
+            "toTable": "Магазины",
+            "toColumn": "store_id"
+          },
+          {
+            "name": "84d8ea2d-24ba-4866-818b-1a1de1f4955d",
+            "fromTable": "Товарные_Остатки",
+            "fromColumn": "Report_DT",
+            "toTable": "Календарь",
+            "toColumn": "Дата"
+          },
+          {
+            "name": "b1fc7586-eb1f-48b6-8c35-aa7e320d927c",
+            "fromTable": "Товарные_Остатки",
+            "fromColumn": "Delivery_date",
+            "toTable": "Периоды_поставок",
+            "toColumn": "Дата поставки"
+          },
+          {
+            "name": "3be51269-fd1c-4ffd-baa7-0d3f356a6f78",
+            "fromTable": "Посетители",
+            "fromColumn": "Report_DT",
+            "toTable": "Календарь",
+            "toColumn": "Дата"
+          },
+          {
+            "name": "0e4a8129-5388-4b58-8d85-b048264aad9d",
+            "fromTable": "Посетители",
+            "fromColumn": "store_id",
+            "toTable": "Магазины",
+            "toColumn": "store_id"
+          }
+        ],
+        "annotations": [
+          {
+            "name": "ClientCompatibilityLevel",
+            "value": "700"
+          }
+        ]
+      }
+    }
+  }
+}
+
